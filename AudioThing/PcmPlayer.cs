@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using static AudioThing.PcmPlayer;
 
 namespace AudioThing;
 
@@ -62,32 +61,39 @@ public unsafe partial class PcmPlayer : IDisposable
 
 	// Looks stupid but is required so the GC doesn't delete the callback because it is only referenced in unmanaged code
 	private WaveOutProc _waveOutCallback;
-	private uint _blockSize;
-	private readonly WAVEHDR[] _blocks = new WAVEHDR[2];
+	private int _blockSize;
+	private readonly WAVEHDR[] _blocks = new WAVEHDR[3];
 	private int _currentBlock = 0;
 
 	private volatile int _playingBlocksCount = 0;
 
 	public bool Playing { get; private set; } = false;
 
-	public PcmPlayer(uint samplesPerSecond, ushort bitsPerSample, ushort channels, DataCallback dataCallback)
+	public PcmPlayer(int samplesPerSecond, int bitsPerSample, int channels, DataCallback dataCallback, int blockCount = -1)
 	{
 		_dataCallback = dataCallback;
 
+		var blockAlign = bitsPerSample * channels / 8;
+
 		WAVEFORMATEX format;
 		format.Size = (ushort)sizeof(WAVEFORMATEX);
-		format.FormatTag = 1;
-		format.Channels = channels;
-		format.SamplesPerSec = samplesPerSecond;
-		format.BitsPerSample = bitsPerSample;
-		format.BlockAlign = (ushort)(format.BitsPerSample * format.Channels / 8);
+		format.FormatTag = 1; // PCM audio
+		format.Channels = (ushort)channels; // How many audio channels (how many samples per "block")
+		format.SamplesPerSec = (uint)samplesPerSecond; // How many samples per second
+		format.BitsPerSample = (ushort)bitsPerSample; // How many bits per sample
+		format.BlockAlign = (ushort)blockAlign; // Number of bytes per "block"
 		format.AvgBytesPerSec = format.BlockAlign * format.SamplesPerSec;
 
 		if (waveOutOpen(out _handle, WAVE_MAPPER, format, _waveOutCallback = Callback, 0, CALLBACK_FUNCTION) != 0)
 			throw new("Failed to open waveOut device.");
 
-		// 50ms of audio data per buffer
-		_blockSize = format.BlockAlign * format.SamplesPerSec / 20;
+		// 50ms of audio data per buffer if block size not specified
+		_blockSize = blockAlign * samplesPerSecond / 20;
+
+		if (blockCount != -1)
+		{
+			_blockSize = blockCount * blockAlign;
+		}
 
 		for (var i = 0; i < _blocks.Length; i++)
 		{
@@ -95,7 +101,7 @@ public unsafe partial class PcmPlayer : IDisposable
 			var buffer = new Span<byte>((void*)bufferPtr, (int)_blockSize);
 
 			_blocks[i].Data = bufferPtr;
-			_blocks[i].BufferLength = _blockSize;
+			_blocks[i].BufferLength = (uint)_blockSize;
 		}
 	}
 
