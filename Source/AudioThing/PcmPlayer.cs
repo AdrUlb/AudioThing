@@ -60,7 +60,9 @@ public unsafe partial class PcmPlayer : IDisposable
 	private nint _handle;
 
 	// Looks stupid but is required so the GC doesn't delete the callback because it is only referenced in unmanaged code
-	private WaveOutProc _waveOutCallback;
+#pragma warning disable IDE0052 // Remove unread private members
+	private readonly WaveOutProc _waveOutCallback;
+#pragma warning restore IDE0052 // Remove unread private members
 	private int _blockSize;
 	private readonly WAVEHDR[] _blocks = new WAVEHDR[3];
 	private int _currentBlock = 0;
@@ -109,6 +111,8 @@ public unsafe partial class PcmPlayer : IDisposable
 	{
 		switch (msg)
 		{
+			case WaveOutMsg.Open:
+				break;
 			case WaveOutMsg.Done:
 				{
 					_playingBlocksCount--;
@@ -143,10 +147,9 @@ public unsafe partial class PcmPlayer : IDisposable
 		if (Playing)
 			return;
 
+		PlayNextBlock();
+		PlayNextBlock();
 		Playing = true;
-
-		PlayNextBlock();
-		PlayNextBlock();
 	}
 
 	public void Stop()
