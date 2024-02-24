@@ -17,16 +17,16 @@ internal static partial class AudioThingWasapi
 
 	internal delegate void PlayCallback(uint frames, nint buffer);
 
-	[LibraryImport("WasapiTest", EntryPoint = "AudioThing_CreateContext")]
+	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_CreateContext")]
 	internal static partial nint CreateContext(in WAVEFORMATEX fmt);
 
-	[LibraryImport("WasapiTest", EntryPoint = "AudioThing_DestroyContext")]
+	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_DestroyContext")]
 	internal static partial void DestroyContext(nint context);
 
-	[LibraryImport("WasapiTest", EntryPoint = "AudioThing_Play")]
+	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_Play")]
 	internal static partial void Play(nint context, PlayCallback callback);
 
-	[LibraryImport("WasapiTest", EntryPoint = "AudioThing_Stop")]
+	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_Stop")]
 	internal static partial void Stop(nint context);
 
 }
