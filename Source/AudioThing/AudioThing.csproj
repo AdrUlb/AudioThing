@@ -7,4 +7,8 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<None Include="../../NativeLibs/win-x64/AudioThing.Wasapi.dll" Link="runtimes/win-x64/native/AudioThing.Wasapi.dll" CopyToOutputDirectory="Always" />
+	</ItemGroup>
+
 </Project>

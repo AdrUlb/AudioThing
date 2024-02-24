@@ -4,6 +4,8 @@ namespace AudioThing;
 
 internal static partial class AudioThingWasapi
 {
+	public const string LibraryName = "AudioThing.Wasapi";
+
 	internal struct WAVEFORMATEX
 	{
 		public ushort FormatTag;
@@ -17,16 +19,16 @@ internal static partial class AudioThingWasapi
 
 	internal delegate void PlayCallback(uint frames, nint buffer);
 
-	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_CreateContext")]
+	[LibraryImport(LibraryName, EntryPoint = "AudioThing_CreateContext")]
 	internal static partial nint CreateContext(in WAVEFORMATEX fmt);
 
-	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_DestroyContext")]
+	[LibraryImport(LibraryName, EntryPoint = "AudioThing_DestroyContext")]
 	internal static partial void DestroyContext(nint context);
 
-	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_Play")]
+	[LibraryImport(LibraryName, EntryPoint = "AudioThing_Play")]
 	internal static partial void Play(nint context, PlayCallback callback);
 
-	[LibraryImport("AudioThing.Wasapi", EntryPoint = "AudioThing_Stop")]
+	[LibraryImport(LibraryName, EntryPoint = "AudioThing_Stop")]
 	internal static partial void Stop(nint context);
 
 }
@@ -54,6 +56,8 @@ public unsafe partial class AudioPlayer<T> : IDisposable
 
 	public AudioPlayer(int samplesPerSecond, int bitsPerSample, int channels, AudioFormat audioFormat, DataCallback dataCallback)
 	{
+		Manager.Init();
+
 		SamplesPerSecond = samplesPerSecond;
 		BitsPerSample = bitsPerSample;
 		Channels = channels;
