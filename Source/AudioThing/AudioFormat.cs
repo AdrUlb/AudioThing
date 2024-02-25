@@ -1,6 +1,7 @@
 ﻿namespace AudioThing;
 
-public enum AudioFormat
+public enum AudioFormat : ushort
 {
-	Pcm, Float
+	Pcm = 0x0001,
+	IeeeFloat = 0x0003
 }

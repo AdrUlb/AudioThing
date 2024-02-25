@@ -12,14 +12,14 @@ internal static class Manager
 
 	private static nint AudioThingWasapiImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 	{
-		if (libraryName != AudioThingWasapi.LibraryName)
+		if (libraryName != WasapiAudioClient.LibraryName)
 			return 0;
 
 		if (_libAudioThingWasapiHandle != 0)
 			return _libAudioThingWasapiHandle;
 
 		var (ridOs, libName) =
-			OperatingSystem.IsWindows() ? ("win", "AudioThing.Wasapi.dll") :
+			OperatingSystem.IsWindows() ? ("win", $"{libraryName}.dll") :
 			throw new PlatformNotSupportedException();
 
 		var ridPlatform = RuntimeInformation.ProcessArchitecture switch
@@ -37,11 +37,6 @@ internal static class Manager
 		return _libAudioThingWasapiHandle;
 	}
 
-	private static void AppDomain_CurrentDomain_ProcessExit(object? sender, EventArgs args)
-	{
-		Clean();
-	}
-
 	internal static void Init()
 	{
 		lock (_initLock)
@@ -55,22 +50,7 @@ internal static class Manager
 			}
 			catch { }
 
-			AppDomain.CurrentDomain.ProcessExit += AppDomain_CurrentDomain_ProcessExit;
-
 			_isInit = true;
-		}
-	}
-
-	internal static void Clean()
-	{
-		lock (_initLock)
-		{
-			if (!_isInit)
-				return;
-
-			AppDomain.CurrentDomain.ProcessExit -= AppDomain_CurrentDomain_ProcessExit;
-
-			_isInit = false;
 		}
 	}
 }
