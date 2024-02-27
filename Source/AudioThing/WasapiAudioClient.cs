@@ -84,10 +84,18 @@ public partial class WasapiAudioClient : IDisposable
 
 	public void Start() => NativeStart(_handle);
 	public void Stop() => NativeStop(_handle);
-	public unsafe Span<T> GetBuffer<T>(uint requestFrameCount) where T : unmanaged
+	public unsafe bool TryGetBuffer<T>(uint requestFrameCount, out Span<T> buffer) where T : unmanaged
 	{
 		var ptr = NativeGetBuffer(_handle, requestFrameCount);
-		return new Span<T>((T*)ptr, (int)requestFrameCount * Channels);
+
+		if (ptr == 0)
+		{
+			buffer = [];
+			return false;
+		}
+
+		buffer = new Span<T>((T*)ptr, (int)requestFrameCount * Channels);
+		return true;
 	}
 
 	public void ReleaseBuffer(uint writtenFrameCount)

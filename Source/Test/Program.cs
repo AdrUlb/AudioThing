@@ -20,7 +20,7 @@ const int maxFrameWriteCount = 2; // Write as little data at once as possible
 var maxPadding = client.FramesPerSecond / 100; // Keeping the padding as low as possible will make written data play sooner
 
 Console.WriteLine($"Writing a maximum of {maxFrameWriteCount} frames at once");
-Console.WriteLine($"Maximum padding: {maxPadding} frames ({(double)maxPadding / (client.FramesPerSecond / 1000.0):N2}ms)");
+Console.WriteLine($"Maximum padding: {maxPadding} frames ({(double)maxPadding / (client.FramesPerSecond / 1000.0):N2}ms delay)");
 
 while (br.BaseStream.Position < br.BaseStream.Length)
 {
@@ -40,9 +40,8 @@ while (br.BaseStream.Position < br.BaseStream.Length)
 
 	var writtenFrames = writtenSamples / client.Channels;
 	client.ReleaseBuffer((uint)writtenFrames);
-	//Console.WriteLine($"Writing {writtenFrames} frames ({(double)writtenFrames / client.SamplesPerSecond * 1000.0:.2}ms)");
 
 	lastWriteCount = writtenSamples;
 }
-Thread.Sleep((int)(lastWriteCount / 44100.0 * 1000.0));
+Thread.Sleep((int)(lastWriteCount / 44100.0 * 1000.0)); // Make sure there is no audio left to play
 client.Stop();
