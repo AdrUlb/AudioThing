@@ -12,7 +12,7 @@ internal static class Manager
 
 	private static nint AudioThingWasapiImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 	{
-		if (libraryName != WasapiAudioClient.LibraryName)
+		if (libraryName != AudioClient.LibraryName)
 			return 0;
 
 		if (_libAudioThingWasapiHandle != 0)
@@ -20,6 +20,7 @@ internal static class Manager
 
 		var (ridOs, libName) =
 			OperatingSystem.IsWindows() ? ("win", $"{libraryName}.dll") :
+			OperatingSystem.IsLinux() ? ("linux", $"lib{libraryName}.so") :
 			throw new PlatformNotSupportedException();
 
 		var ridPlatform = RuntimeInformation.ProcessArchitecture switch

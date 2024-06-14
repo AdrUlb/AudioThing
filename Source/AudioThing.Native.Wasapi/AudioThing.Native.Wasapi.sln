@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34526.213
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioThing.Wasapi.Native.Shared", "AudioThing.Wasapi.Native.Shared.vcxproj", "{1E6234A1-4DAC-46A7-A7D9-A1782F51B1BF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioThing.Native.Wasapi.Shared", "AudioThing.Native.Wasapi.Shared.vcxproj", "{1E6234A1-4DAC-46A7-A7D9-A1782F51B1BF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioThing.Wasapi.Native.Static", "AudioThing.Wasapi.Native.Static.vcxproj", "{CC407BCA-E7E5-4DCD-8442-34744BC12478}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioThing.Native.Wasapi.Static", "AudioThing.Native.Wasapi.Static.vcxproj", "{CC407BCA-E7E5-4DCD-8442-34744BC12478}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

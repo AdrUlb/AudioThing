@@ -2,7 +2,7 @@
 
 namespace AudioThing;
 
-public partial class WasapiAudioClient : IDisposable
+public partial class AudioClient : IDisposable
 {
 	private struct WaveFormat
 	{
@@ -14,12 +14,12 @@ public partial class WasapiAudioClient : IDisposable
 		public ushort BitsPerSample;
 	}
 
-	internal const string LibraryName = "AudioThing.Wasapi.Native";
+	internal const string LibraryName = "AudioThing.Native";
 
 	private readonly nint _handle;
 
 	[LibraryImport(LibraryName, EntryPoint = "AudioThing_Client_Create")]
-	private static partial nint NativeCreate(in WaveFormat format);
+	private static partial nint NativeCreate(AudioFormat format, ushort channels, ushort bitsPerSample, ushort frameSize, uint framesPerSec);
 
 	[LibraryImport(LibraryName, EntryPoint = "AudioThing_Client_Destroy")]
 	private static partial void NativeDestroy(nint handle);
@@ -45,36 +45,36 @@ public partial class WasapiAudioClient : IDisposable
 	private readonly WaveFormat _format;
 
 	public readonly AudioFormat Format;
-	public readonly int FramesPerSecond;
-	public readonly int BitsPerSample;
-	public readonly int Channels;
+	public readonly uint FramesPerSecond;
+	public readonly ushort BitsPerSample;
+	public readonly ushort Channels;
 	public readonly uint BufferFrames;
-	public readonly int FrameSize;
+	public readonly ushort FrameSize;
 
 	public uint PaddingFrames => NativeGetPaddingFrames(_handle);
 
-	public WasapiAudioClient(AudioFormat format, int framesPerSecond, int bitsPerSample, int channels)
+	public AudioClient(AudioFormat format, int framesPerSecond, int bitsPerSample, int channels)
 	{
 		Manager.Init();
 
 		Format = format;
-		FramesPerSecond = framesPerSecond;
-		BitsPerSample = bitsPerSample;
-		Channels = channels;
+		FramesPerSecond = (uint)framesPerSecond;
+		BitsPerSample = (ushort)bitsPerSample;
+		Channels = (ushort)channels;
 
-		FrameSize = (channels * bitsPerSample) / 8;
+		FrameSize = (ushort)((channels * bitsPerSample) / 8);
 
 		_format = new()
 		{
 			FormatTag = format,
-			Channels = (ushort)channels,
-			BitsPerSample = (ushort)bitsPerSample,
-			BlockAlign = (ushort)FrameSize,
-			SamplesPerSec = (uint)framesPerSecond,
-			AvgBytesPerSec = (uint)(FrameSize * framesPerSecond)
+			Channels = Channels,
+			BitsPerSample = BitsPerSample,
+			BlockAlign = FrameSize,
+			SamplesPerSec = FramesPerSecond,
+			AvgBytesPerSec = FrameSize * FramesPerSecond
 		};
 
-		_handle = NativeCreate(_format);
+		_handle = NativeCreate(format, (ushort)channels, (ushort)bitsPerSample, FrameSize, FramesPerSecond);
 
 		if (_handle == 0)
 			throw new("Failed to create audio client.");
@@ -103,7 +103,7 @@ public partial class WasapiAudioClient : IDisposable
 		NativeReleaseBuffer(_handle, writtenFrameCount);
 	}
 
-	~WasapiAudioClient() => Dispose(false);
+	~AudioClient() => Dispose(false);
 
 	public void Dispose()
 	{
