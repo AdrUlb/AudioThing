@@ -22,7 +22,7 @@ Client::Client(uint16_t format, uint16_t channels, uint16_t bitsPerSample, uint1
 	snd_pcm_hw_params_set_periods(_pcm, hwParams, 2, 0);
 	snd_pcm_hw_params_set_buffer_size(_pcm, hwParams, (ulong)_bufferSize);
 	snd_pcm_hw_params(_pcm, hwParams);
-	ulong periodSize = 0;
+	snd_pcm_uframes_t periodSize = 0;
 	snd_pcm_hw_params_get_period_size(hwParams, &periodSize, nullptr);
 	_buffer = new uint8_t[_bufferSize];
 }
