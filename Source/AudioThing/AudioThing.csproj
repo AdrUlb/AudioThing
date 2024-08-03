@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="../../NativeLibs/win-x64/AudioThing.Native.Shared.dll" Link="runtimes/win-x64/native/AudioThing.Native.dll" CopyToOutputDirectory="Always" />
+		<None Include="../../NativeLibs/win-x64/AudioThing.Native.dll" Link="runtimes/win-x64/native/AudioThing.Native.dll" CopyToOutputDirectory="Always" />
 		<None Include="../../NativeLibs/linux-x64/libAudioThing.Native.so" Link="runtimes/linux-x64/native/libAudioThing.Native.so" CopyToOutputDirectory="Always" />
 	</ItemGroup>
 

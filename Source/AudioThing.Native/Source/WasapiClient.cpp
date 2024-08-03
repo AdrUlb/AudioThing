@@ -15,8 +15,8 @@ Client::Client(uint16_t format, uint16_t channels, uint16_t bitsPerSample, uint1
 	_format->wBitsPerSample = bitsPerSample;
 	_format->nBlockAlign = frameSize;
 	_format->nSamplesPerSec = framesPerSec;
-	_format->nAvgBytesPerSec = framesPerSecond * frameSize;
-	constexpr REFERENCE_TIME bufferDuration = (REFERENCE_TIME)10'000 * 1; // 1 = 100ns, 10'000 = 1'000'000ns = 1'000�s = 1ms
+	_format->nAvgBytesPerSec = framesPerSec * frameSize;
+	constexpr REFERENCE_TIME bufferDuration = (REFERENCE_TIME)10'000 * 1; // 1 = 100ns, 10'000 = 1'000'000ns = 1'000 s = 1ms
 
 	SET_ERROR_AND_RETURN_IF_FAILED(CoCreateInstance(CLSID_MMDeviceEnumerator, nullptr, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void **)&_deviceEnumerator));
 	SET_ERROR_AND_RETURN_IF_FAILED(_deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &_device));
@@ -52,17 +52,17 @@ Client::~Client()
 	}
 }
 
-void Start()
+void Client::Start()
 {
 	SET_ERROR_AND_RETURN_IF_FAILED(_audioClient->Start());
 }
 
-void Stop()
+void Client::Stop()
 {
 	SET_ERROR_AND_RETURN_IF_FAILED(_audioClient->Stop());
 }
 
-uint32_t GetBufferFrames()
+uint32_t Client::GetBufferFrames()
 {
 	UINT32 ret;
 
@@ -72,7 +72,7 @@ uint32_t GetBufferFrames()
 	return ret;
 }
 
-uint32_t GetPaddingFrames()
+uint32_t Client::GetPaddingFrames()
 {
 	UINT32 ret;
 
@@ -82,7 +82,7 @@ uint32_t GetPaddingFrames()
 	return ret;
 }
 
-uint8_t *GetBuffer(uint32_t requestFrameCount)
+uint8_t *Client::GetBuffer(uint32_t requestFrameCount)
 {
 	BYTE *ret;
 
@@ -92,12 +92,12 @@ uint8_t *GetBuffer(uint32_t requestFrameCount)
 	return ret;
 }
 
-void ReleaseBuffer(uint32_t writtenFrameCount)
+void Client::ReleaseBuffer(uint32_t writtenFrameCount)
 {
 	_error = _audioRenderClient->ReleaseBuffer(writtenFrameCount, 0);
 }
 
-HRESULT GetError() const
+HRESULT Client::GetError() const
 {
 	return _error;
 }

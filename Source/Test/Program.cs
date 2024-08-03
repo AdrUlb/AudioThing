@@ -1,6 +1,6 @@
 ﻿using AudioThing;
 
-using var client = new WasapiAudioClient(AudioFormat.IeeeFloat, 44100, 32, 2);
+using var client = new AudioClient(AudioFormat.Pcm, 44100, 16, 1);
 Console.WriteLine("Format: " + client.Format);
 Console.WriteLine("Frames per second: " + client.FramesPerSecond);
 Console.WriteLine("Bits per sample: " + client.BitsPerSample);
@@ -10,7 +10,7 @@ Console.WriteLine();
 Console.WriteLine("Buffer frames: " + client.BufferFrames);
 Console.WriteLine("Buffer time: " + client.BufferFrames / (client.FramesPerSecond / 1000.0));
 
-using var fs = File.OpenRead(@"C:\Users\Adrian\Desktop\Firepower.raw");
+using var fs = File.OpenRead(@"C:\Users\Adrian\Downloads\test.u16");
 using var br = new BinaryReader(fs);
 
 client.Start();
@@ -29,7 +29,8 @@ while (br.BaseStream.Position < br.BaseStream.Length)
 	if (availableFrames == 0 || client.PaddingFrames > maxPadding)
 		continue;
 
-	var buffer = client.GetBuffer<float>(availableFrames);
+	if (!client.TryGetBuffer<float>(availableFrames, out var buffer))
+		throw new("Failed to get audio buffer.");
 
 	int writtenSamples;
 	for (writtenSamples = 0; writtenSamples / client.Channels < maxFrameWriteCount && writtenSamples < buffer.Length / 2 && br.BaseStream.Position < br.BaseStream.Length; writtenSamples += 2)

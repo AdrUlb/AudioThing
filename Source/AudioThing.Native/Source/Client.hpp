@@ -4,6 +4,7 @@
 #include <Audioclient.h>
 #include <mmdeviceapi.h>
 #include <Windows.h>
+#define SET_ERROR_AND_RETURN_IF_FAILED(x) if (FAILED(_error = (x))) { return; }
 #elif defined(__GNUC__)
 #include <alsa/asoundlib.h>
 #else
